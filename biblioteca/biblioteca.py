@@ -11,6 +11,9 @@ class Biblioteca:
     def buscar(self, isbn: str) -> Optional[Livro]:
         return self.repository.buscar(isbn)
 
+    def verificar_quantidade_disponivel(self, isbn: str) -> int:
+        return self._obter_livro(isbn).quantidade_disponivel
+
     def cadastrar(self, livro: Livro) -> None:
         self.repository.cadastrar(livro)
 
@@ -18,7 +21,6 @@ class Biblioteca:
         return self.repository.remover(isbn)
 
     def emprestar(self, isbn: str) -> bool:
-        """Retorna False quando não há exemplares disponíveis."""
         livro = self._obter_livro(isbn)
         if not livro.emprestar():
             return False
