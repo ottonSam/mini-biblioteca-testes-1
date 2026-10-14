@@ -1,3 +1,4 @@
+from unittest.mock import Mock, patch
 import pytest
 from biblioteca.biblioteca import Biblioteca
 from biblioteca.livro import Livro
@@ -31,6 +32,19 @@ def test_cadastro_livro_com_fixture(livro_disponivel):
     assert livro_salvo is not None
     assert livro_salvo.isbn == livro.isbn
     assert livro_salvo.titulo == livro.titulo
+
+
+def test_cadastro_livro_com_mock():
+    # Arrange
+    mock_repository = Mock()
+    biblioteca = Biblioteca(repository=mock_repository)
+    livro = Livro("97801", "Clean Code", "Robert C. Martin", 3)
+
+    # Act
+    biblioteca.cadastrar(livro)
+
+    # Assert
+    mock_repository.cadastrar.assert_called_once_with(livro)
 
 
 def test_cadastrar_livro_ja_cadastrado():
@@ -74,6 +88,21 @@ def test_consulta_livro_existente():
     assert resultado is not None
     assert resultado.isbn == "97801"
     assert resultado.titulo == "Clean Code"
+
+
+def test_consulta_livro_existente_com_mock():
+    # Arrange
+    mock_repository = Mock()
+    livro_esperado = Livro("97801", "Clean Code", "Robert C. Martin", 3)
+    mock_repository.buscar.return_value = livro_esperado
+    biblioteca = Biblioteca(repository=mock_repository)
+
+    # Act
+    resultado = biblioteca.buscar("97801")
+
+    # Assert
+    assert resultado == livro_esperado
+    mock_repository.buscar.assert_called_once_with("97801")
 
 
 def test_consulta_livro_inexistente():
@@ -124,6 +153,23 @@ def test_emprestimo():
     # Assert
     assert sucesso is True
     assert biblioteca.verificar_quantidade_disponivel("97801") == 1
+
+
+def test_emprestimo_com_mock():
+    # Arrange
+    mock_repository = Mock()
+    livro = Livro("97801", "Clean Code", "Robert C. Martin", 2)
+    mock_repository.buscar.return_value = livro
+    biblioteca = Biblioteca(repository=mock_repository)
+
+    # Act
+    sucesso = biblioteca.emprestar("97801")
+
+    # Assert
+    assert sucesso is True
+    assert livro.quantidade_disponivel == 1
+    mock_repository.buscar.assert_called_once_with("97801")
+    mock_repository.atualizar.assert_called_once_with(livro)
 
 
 def test_emprestar_livro_sem_estoque():
