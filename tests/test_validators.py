@@ -53,3 +53,63 @@ def test_quantidade_exemplares():
 
     # Assert
     assert "Quantidade disponível deve ser um inteiro maior ou igual a zero." in str(exc_info.value)
+
+
+@pytest.mark.parametrize("quantidade", [0, 1, 2])
+def test_quantidade_exemplares_valida_parametrizado(quantidade):
+    # Arrange
+    qtd = quantidade
+
+    # Act
+    resultado = validar_quantidade_disponivel(qtd)
+
+    # Assert
+    assert resultado is None
+
+
+@pytest.mark.parametrize("quantidade_invalida", [-1, -5, True, "2"])
+def test_quantidade_exemplares_invalida_parametrizado(quantidade_invalida):
+    # Arrange
+    qtd = quantidade_invalida
+
+    # Act
+    with pytest.raises(ValueError) as exc_info:
+        validar_quantidade_disponivel(qtd)
+
+    # Assert
+    assert "Quantidade disponível deve ser um inteiro maior ou igual a zero." in str(exc_info.value)
+
+
+@pytest.mark.parametrize("isbn_valido", ["97800", "97801", "97900", "97999"])
+def test_isbn_valido_parametrizado(isbn_valido):
+    # Arrange
+    isbn = isbn_valido
+
+    # Act
+    resultado = validar_isbn(isbn)
+
+    # Assert
+    assert resultado is None
+
+
+@pytest.mark.parametrize(
+    "isbn_invalido",
+    [
+        "9781",
+        "978001",
+        "97701",
+        "98000",
+        "978ab",
+        12345,
+    ],
+)
+def test_isbn_invalido_parametrizado(isbn_invalido):
+    # Arrange
+    isbn = isbn_invalido
+
+    # Act
+    with pytest.raises(ValueError) as exc_info:
+        validar_isbn(isbn)
+
+    # Assert
+    assert isinstance(exc_info.value, ValueError)
