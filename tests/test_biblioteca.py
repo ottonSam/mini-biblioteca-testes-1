@@ -18,6 +18,21 @@ def test_cadastro_livro():
     assert livro_salvo.titulo == "Clean Code"
 
 
+def test_cadastro_livro_com_fixture(livro_disponivel):
+    # Arrange
+    biblioteca = Biblioteca()
+    livro = livro_disponivel
+
+    # Act
+    biblioteca.cadastrar(livro)
+
+    # Assert
+    livro_salvo = biblioteca.buscar(livro.isbn)
+    assert livro_salvo is not None
+    assert livro_salvo.isbn == livro.isbn
+    assert livro_salvo.titulo == livro.titulo
+
+
 def test_cadastrar_livro_ja_cadastrado():
     # Arrange
     biblioteca = Biblioteca()
@@ -123,6 +138,20 @@ def test_emprestar_livro_sem_estoque():
     # Assert
     assert sucesso is False
     assert biblioteca.verificar_quantidade_disponivel("97801") == 0
+
+
+def test_emprestar_livro_sem_estoque_com_fixture(livro_indisponivel):
+    # Arrange
+    biblioteca = Biblioteca()
+    livro = livro_indisponivel
+    biblioteca.cadastrar(livro)
+
+    # Act
+    sucesso = biblioteca.emprestar(livro.isbn)
+
+    # Assert
+    assert sucesso is False
+    assert biblioteca.verificar_quantidade_disponivel(livro.isbn) == 0
 
 
 def test_emprestar_livro_inexistente():

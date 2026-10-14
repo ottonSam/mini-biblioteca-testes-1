@@ -2,6 +2,10 @@ import unittest
 from biblioteca.livro import Livro
 
 
+# ==========================================
+# Testes Originais com Pytest
+# ==========================================
+
 def test_criacao_livro():
     # Arrange
     isbn = "97801"
@@ -54,6 +58,49 @@ def test_devolucao_livro():
     # Assert
     assert livro.quantidade_disponivel == 2
 
+
+# ==========================================
+# Testes com Fixtures (Pytest)
+# ==========================================
+
+def test_emprestimo_com_sucesso_com_fixture(livro_disponivel):
+    # Arrange
+    livro = livro_disponivel
+
+    # Act
+    resultado = livro.emprestar()
+
+    # Assert
+    assert resultado is True
+    assert livro.quantidade_disponivel == 2
+
+
+def test_emprestimo_sem_exemplares_com_fixture(livro_indisponivel):
+    # Arrange
+    livro = livro_indisponivel
+
+    # Act
+    resultado = livro.emprestar()
+
+    # Assert
+    assert resultado is False
+    assert livro.quantidade_disponivel == 0
+
+
+def test_devolucao_livro_com_fixture(livro_disponivel):
+    # Arrange
+    livro = livro_disponivel
+
+    # Act
+    livro.devolver()
+
+    # Assert
+    assert livro.quantidade_disponivel == 4
+
+
+# ==========================================
+# Testes com Unittest
+# ==========================================
 
 class TestLivroUnittest(unittest.TestCase):
     def test_criacao_livro(self):
